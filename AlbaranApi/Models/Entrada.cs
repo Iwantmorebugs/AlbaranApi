@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using QRCoder;
 
 namespace AlbaranApi.Models
 {
@@ -10,11 +9,10 @@ namespace AlbaranApi.Models
             string entradaId,
             DateTime creationDate,
             string providerId,
-            Guid productIdentity, 
+            Guid productIdentity,
             decimal amountToBeAdded,
             string qrCodeData)
         {
-           
             EntradaId = entradaId;
             CreationDate = creationDate;
             ProviderId = providerId;
@@ -23,17 +21,17 @@ namespace AlbaranApi.Models
             QrCodeData = qrCodeData;
         }
 
+        internal Entrada()
+        {
+            /* Required by EF */
+        }
+
         public string QrCodeData { get; set; }
         public string EntradaId { get; set; }
         public DateTime CreationDate { get; set; }
         public string ProviderId { get; set; }
         public Guid ProductIdentity { get; set; }
-        [Column(TypeName = "decimal(18,4)")]
-        public decimal ProductAmount { get; set; }
 
-        internal Entrada()
-        {
-            /* Required by EF */
-        }
+        [Column(TypeName = "decimal(18,4)")] public decimal ProductAmount { get; set; }
     }
 }

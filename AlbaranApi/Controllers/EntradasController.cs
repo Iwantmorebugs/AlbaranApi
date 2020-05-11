@@ -1,10 +1,10 @@
-﻿using AlbaranApi.Contracts;
+﻿using System;
+using AlbaranApi.Contracts;
 using AlbaranApi.Dto;
 using AlbaranApi.Models;
 using AlbaranApi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace AlbaranApi.Controllers
 {
@@ -29,7 +29,6 @@ namespace AlbaranApi.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                
                 var entrada = EntradaDtoToEntrada(entradaDto);
 
                 var entradaResult = _entradasRepository.CreateEntry(entrada);
@@ -47,7 +46,7 @@ namespace AlbaranApi.Controllers
 
         private static Entrada EntradaDtoToEntrada(EntradaDto entradaDto)
         {
-            var entrada = new Entrada()
+            var entrada = new Entrada
             {
                 QrCodeData = entradaDto.EntradaId + "," + entradaDto.CreationDate + "," + entradaDto.ProviderId + "," +
                              entradaDto.ProductIdentity,
@@ -77,10 +76,7 @@ namespace AlbaranApi.Controllers
         public static string FirstCharToUpper(string s)
         {
             // Check for empty string.  
-            if (string.IsNullOrEmpty(s))
-            {
-                return string.Empty;
-            }
+            if (string.IsNullOrEmpty(s)) return string.Empty;
             // Return char and concat substring.  
             return char.ToUpper(s[0]) + s.Substring(1);
         }

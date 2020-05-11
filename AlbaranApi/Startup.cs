@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
-
 namespace AlbaranApi
 {
     public class Startup
@@ -34,13 +33,12 @@ namespace AlbaranApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             var connectionString = Configuration.GetConnectionString("SqlConnection");
 
             services.AddControllers();
 
             services.AddScoped<IEntradaContext, EntradaContext>()
-                    .AddScoped<IEntradaRepository, EntradaRepository>();
+                .AddScoped<IEntradaRepository, EntradaRepository>();
 
             services.AddDbContext<EntradaContext>(o => o.UseSqlServer(connectionString));
 
@@ -63,17 +61,12 @@ namespace AlbaranApi
 
                 swagger.SwaggerDoc(SwaggerConfiguration.DocNameV1, info);
             });
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
             app.UseHttpsRedirection();
 
@@ -81,10 +74,7 @@ namespace AlbaranApi
 
             //app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
 
             app.UseSwagger();

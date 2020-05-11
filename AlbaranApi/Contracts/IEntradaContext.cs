@@ -7,6 +7,5 @@ namespace AlbaranApi.Contracts
     {
         DbSet<Entrada> Entradas { get; set; }
         int SaveChanges(); //need not to implement explicitly as it is implemented inside DBContext
-
     }
 }

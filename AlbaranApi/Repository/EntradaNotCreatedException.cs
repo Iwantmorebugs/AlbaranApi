@@ -7,7 +7,8 @@ namespace AlbaranApi.Repository
         public EntradaNotCreatedException()
         {
         }
-        public EntradaNotCreatedException(string entradaId): base($"Entrada with this id {entradaId} already exists")
+
+        public EntradaNotCreatedException(string entradaId) : base($"Entrada with this id {entradaId} already exists")
         {
         }
     }

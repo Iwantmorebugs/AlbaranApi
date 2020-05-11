@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AlbaranApi.Contracts;
+﻿using AlbaranApi.Contracts;
 using Microsoft.EntityFrameworkCore;
 
 namespace AlbaranApi.Models.Context
 {
-    public class EntradaContext: DbContext, IEntradaContext
+    public sealed class EntradaContext : DbContext, IEntradaContext
     {
-        public DbSet<Entrada> Entradas { get; set; }
-
         public EntradaContext(DbContextOptions<EntradaContext> options) : base(options)
         {
             Database.EnsureCreated();
         }
+
+        public DbSet<Entrada> Entradas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
