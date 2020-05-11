@@ -6,10 +6,10 @@ using AlbaranApi.Models;
 
 namespace AlbaranApi.Repository
 {
-    public class EntradasRepository : IEntradaRepository
+    public class EntradaRepository : IEntradaRepository
     {
         private readonly IEntradaContext _context;
-        public EntradasRepository(IEntradaContext context)
+        public EntradaRepository(IEntradaContext context)
         {
             _context = context;
         }
