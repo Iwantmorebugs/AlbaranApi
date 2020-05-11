@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Drawing;
+using System.IO;
 using AlbaranApi.Contracts;
 using AlbaranApi.Dto;
 using AlbaranApi.Models;
 using AlbaranApi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using QRCoder;
 
 namespace AlbaranApi.Controllers
 {
@@ -13,13 +16,18 @@ namespace AlbaranApi.Controllers
     public class EntradasController : ControllerBase
     {
         private readonly IEntradaRepository _entradasRepository;
+        private readonly IQRService _qrService;
 
         private readonly ILogger<EntradasController> _logger;
 
-        public EntradasController(ILogger<EntradasController> logger, IEntradaRepository entradasRepository)
+        public EntradasController(
+            ILogger<EntradasController> logger,
+            IEntradaRepository entradasRepository,
+            IQRService qrService)
         {
             _logger = logger;
             _entradasRepository = entradasRepository;
+            _qrService = qrService;
         }
 
         [HttpPost]
@@ -30,8 +38,8 @@ namespace AlbaranApi.Controllers
             try
             {
                 var entrada = EntradaDtoToEntrada(entradaDto);
-
                 var entradaResult = _entradasRepository.CreateEntry(entrada);
+
                 return Ok(entradaResult);
             }
             catch (EntradaNotCreatedException)
@@ -44,17 +52,25 @@ namespace AlbaranApi.Controllers
             }
         }
 
-        private static Entrada EntradaDtoToEntrada(EntradaDto entradaDto)
+        private Entrada EntradaDtoToEntrada(EntradaDto entradaDto)
         {
+            var qrCodeData = entradaDto.EntradaId + "," + entradaDto.CreationDate + "," + entradaDto.ProviderId + "," +
+                             entradaDto.ProductIdentity;
+            QRCode qrCode = _qrService.CreateQrCode(qrCodeData);
+            Bitmap qrImage = _qrService.CreateQrImage(qrCode);
+
+            var image = ImageToByteArray(qrImage);
+
             var entrada = new Entrada
             {
-                QrCodeData = entradaDto.EntradaId + "," + entradaDto.CreationDate + "," + entradaDto.ProviderId + "," +
-                             entradaDto.ProductIdentity,
+                QrCodeData = qrCodeData,
                 EntradaId = entradaDto.EntradaId,
                 ProviderId = entradaDto.ProviderId,
                 ProductIdentity = entradaDto.ProductIdentity,
                 ProductAmount = entradaDto.ProductAmount,
-                CreationDate = entradaDto.CreationDate
+                CreationDate = entradaDto.CreationDate,
+                QrCodeImage = image
+
             };
             return entrada;
         }
@@ -79,6 +95,12 @@ namespace AlbaranApi.Controllers
             if (string.IsNullOrEmpty(s)) return string.Empty;
             // Return char and concat substring.  
             return char.ToUpper(s[0]) + s.Substring(1);
+        }
+
+        public static byte[] ImageToByteArray(System.Drawing.Image imageIn)
+        {
+            ImageConverter imgCon = new ImageConverter();
+            return (byte[])imgCon.ConvertTo(imageIn, typeof(byte[]));
         }
     }
 }

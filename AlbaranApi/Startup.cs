@@ -1,6 +1,7 @@
 using AlbaranApi.Contracts;
 using AlbaranApi.Models.Context;
 using AlbaranApi.Repository;
+using AlbaranApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +39,8 @@ namespace AlbaranApi
             services.AddControllers();
 
             services.AddScoped<IEntradaContext, EntradaContext>()
-                .AddScoped<IEntradaRepository, EntradaRepository>();
+                    .AddScoped<IQRService, QrServices>()
+                    .AddScoped<IEntradaRepository, EntradaRepository>();
 
             services.AddDbContext<EntradaContext>(o => o.UseSqlServer(connectionString));
 
