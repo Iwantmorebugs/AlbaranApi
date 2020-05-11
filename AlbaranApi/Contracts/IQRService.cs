@@ -3,7 +3,7 @@ using QRCoder;
 
 namespace AlbaranApi.Contracts
 {
-    public interface IQRService
+    public interface IQrService
     {
         QRCode CreateQrCode(string qrCodeData);
         Bitmap CreateQrImage(QRCode qrCode);

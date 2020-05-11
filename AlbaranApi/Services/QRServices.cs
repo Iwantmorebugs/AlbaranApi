@@ -4,7 +4,7 @@ using QRCoder;
 
 namespace AlbaranApi.Services
 {
-    public class QrServices : IQRService
+    public class QrServices : IQrService
     {
         
         public QRCode CreateQrCode(string qrData)

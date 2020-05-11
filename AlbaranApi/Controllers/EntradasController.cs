@@ -1,13 +1,12 @@
-﻿using System;
-using System.Drawing;
-using System.IO;
-using AlbaranApi.Contracts;
+﻿using AlbaranApi.Contracts;
 using AlbaranApi.Dto;
 using AlbaranApi.Models;
 using AlbaranApi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using QRCoder;
+using System;
+using System.Drawing;
 
 namespace AlbaranApi.Controllers
 {
@@ -16,14 +15,14 @@ namespace AlbaranApi.Controllers
     public class EntradasController : ControllerBase
     {
         private readonly IEntradaRepository _entradasRepository;
-        private readonly IQRService _qrService;
+        private readonly IQrService _qrService;
 
         private readonly ILogger<EntradasController> _logger;
 
         public EntradasController(
             ILogger<EntradasController> logger,
             IEntradaRepository entradasRepository,
-            IQRService qrService)
+            IQrService qrService)
         {
             _logger = logger;
             _entradasRepository = entradasRepository;
@@ -97,7 +96,7 @@ namespace AlbaranApi.Controllers
             return char.ToUpper(s[0]) + s.Substring(1);
         }
 
-        public static byte[] ImageToByteArray(System.Drawing.Image imageIn)
+        public static byte[] ImageToByteArray(Image imageIn)
         {
             ImageConverter imgCon = new ImageConverter();
             return (byte[])imgCon.ConvertTo(imageIn, typeof(byte[]));

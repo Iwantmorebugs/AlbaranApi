@@ -39,7 +39,7 @@ namespace AlbaranApi
             services.AddControllers();
 
             services.AddScoped<IEntradaContext, EntradaContext>()
-                    .AddScoped<IQRService, QrServices>()
+                    .AddScoped<IQrService, QrServices>()
                     .AddScoped<IEntradaRepository, EntradaRepository>();
 
             services.AddDbContext<EntradaContext>(o => o.UseSqlServer(connectionString));
