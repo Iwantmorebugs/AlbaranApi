@@ -70,11 +70,11 @@ namespace AlbaranApi
         {
             if (env.IsDevelopment()) app.UseDeveloperExceptionPage();
 
-            app.UseHttpsRedirection();
-
+            // app.UseHttpsRedirection();
+            app.UseHsts();
             app.UseRouting();
 
-            //app.UseAuthorization();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
