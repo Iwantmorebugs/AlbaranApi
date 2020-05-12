@@ -1,7 +1,8 @@
 using AlbaranApi.Contracts;
 using AlbaranApi.Models.Context;
-using AlbaranApi.Repository;
-using AlbaranApi.Services;
+using Autofac;
+using MassTransit;
+using MassTransit.Util;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -38,10 +39,8 @@ namespace AlbaranApi
 
             services.AddControllers();
 
-            services.AddScoped<IEntradaContext, EntradaContext>()
-                .AddScoped<IQrService, QrServices>()
-                .AddScoped<IHandler, Handler.Handler>()
-                .AddScoped<IEntradaRepository, EntradaRepository>();
+            services.AddScoped<IEntradaContext, EntradaContext>();
+
 
             services.AddDbContext<EntradaContext>(o => o.UseSqlServer(connectionString));
 
@@ -66,8 +65,14 @@ namespace AlbaranApi
             });
         }
 
+        public void ConfigureContainer(ContainerBuilder containerBuilder)
+        {
+            var hostAssembly = typeof(Startup).Assembly;
+            containerBuilder.RegisterAssemblyModules(hostAssembly);
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IBusControl bus)
         {
             if (env.IsDevelopment() || env.IsEnvironment("Development")) app.UseDeveloperExceptionPage();
 
@@ -84,6 +89,8 @@ namespace AlbaranApi
             {
                 c.SwaggerEndpoint(SwaggerConfiguration.EndpointUrl, SwaggerConfiguration.EndpointDescription);
             });
+
+            TaskUtil.Await(() => bus.StartAsync());
         }
     }
 }

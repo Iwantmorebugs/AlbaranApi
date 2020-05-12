@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using AlbaranApi.Contracts;
 using AlbaranApi.Dto;
 using AlbaranApi.Repository;
@@ -23,12 +24,12 @@ namespace AlbaranApi.Controllers
 
         [HttpPost]
         [Route("register")]
-        public IActionResult Register([FromBody] EntradaDto entradaDto)
+        public async Task<ActionResult> Register([FromBody] EntradaDto entradaDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var entradaResult = _handler.HandleRegister(entradaDto);
+                var entradaResult = await _handler.HandleRegister(entradaDto);
 
                 return Ok(entradaResult);
             }

@@ -19,9 +19,13 @@ namespace AlbaranApi.Models.Context
             modelBuilder.Entity<Entrada>(u => u.HasKey(k => k.EntradaId))
                 .Entity<Entrada>(u => u.Property(p => p.CreationDate).IsRequired())
                 .Entity<Entrada>(u => u.Property(p => p.ProductAmount).IsRequired())
+                .Entity<Entrada>(u => u.Property(p => p.Category).IsRequired())
+                .Entity<Entrada>(u => u.Property(p => p.Brand).IsRequired())
+                .Entity<Entrada>(u => u.Property(p => p.ProductPrice).IsRequired())
                 .Entity<Entrada>(u => u.Property(p => p.ProductIdentity).IsRequired())
                 .Entity<Entrada>(u => u.Property(p => p.QrCodeData).IsRequired())
-                //.Entity<Entrada>(u => u.Property(p => p.QrCodeImage).IsRequired())
+                .Entity<Entrada>(u => u.Property(p => p.ProductName).IsRequired())
+                .Entity<Entrada>(u => u.Property(p => p.Picture).IsRequired())
                 .Entity<Entrada>(u => u.Property(p => p.ProviderId).IsRequired());
         }
     }

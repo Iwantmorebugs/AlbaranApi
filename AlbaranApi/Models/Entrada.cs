@@ -11,7 +11,8 @@ namespace AlbaranApi.Models
                 string providerId,
                 Guid productIdentity,
                 decimal amountToBeAdded,
-                string qrCodeData)
+                string qrCodeData, decimal productPrice, string productName, string brand, string picture,
+                string category)
             //  byte[] qrCodeImage)
         {
             EntradaId = entradaId;
@@ -20,6 +21,11 @@ namespace AlbaranApi.Models
             ProductIdentity = productIdentity;
             ProductAmount = amountToBeAdded;
             QrCodeData = qrCodeData;
+            ProductPrice = productPrice;
+            ProductName = productName;
+            Brand = brand;
+            Picture = picture;
+            Category = category;
             //  QrCodeImage = qrCodeImage;
         }
 
@@ -32,10 +38,17 @@ namespace AlbaranApi.Models
         public string EntradaId { get; set; }
         public DateTime CreationDate { get; set; }
         public string ProviderId { get; set; }
+        public string ProductName { get; set; }
         public Guid ProductIdentity { get; set; }
 
         // public byte[] QrCodeImage { get; set; }
 
         [Column(TypeName = "decimal(18,4)")] public decimal ProductAmount { get; set; }
+
+        [Column(TypeName = "decimal(18,4)")] public decimal ProductPrice { get; set; }
+
+        public string Brand { get; set; }
+        public string Picture { get; set; }
+        public string Category { get; set; }
     }
 }
