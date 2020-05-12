@@ -21,7 +21,7 @@ namespace AlbaranApi.Models.Context
                 .Entity<Entrada>(u => u.Property(p => p.ProductAmount).IsRequired())
                 .Entity<Entrada>(u => u.Property(p => p.ProductIdentity).IsRequired())
                 .Entity<Entrada>(u => u.Property(p => p.QrCodeData).IsRequired())
-                .Entity<Entrada>(u => u.Property(p => p.QrCodeImage).IsRequired())
+                //.Entity<Entrada>(u => u.Property(p => p.QrCodeImage).IsRequired())
                 .Entity<Entrada>(u => u.Property(p => p.ProviderId).IsRequired());
         }
     }

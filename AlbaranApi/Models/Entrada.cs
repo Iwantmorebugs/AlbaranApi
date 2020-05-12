@@ -6,12 +6,13 @@ namespace AlbaranApi.Models
     public class Entrada
     {
         internal Entrada(
-            string entradaId,
-            DateTime creationDate,
-            string providerId,
-            Guid productIdentity,
-            decimal amountToBeAdded,
-            string qrCodeData, byte[] qrCodeImage)
+                string entradaId,
+                DateTime creationDate,
+                string providerId,
+                Guid productIdentity,
+                decimal amountToBeAdded,
+                string qrCodeData)
+            //  byte[] qrCodeImage)
         {
             EntradaId = entradaId;
             CreationDate = creationDate;
@@ -19,7 +20,7 @@ namespace AlbaranApi.Models
             ProductIdentity = productIdentity;
             ProductAmount = amountToBeAdded;
             QrCodeData = qrCodeData;
-            QrCodeImage = qrCodeImage;
+            //  QrCodeImage = qrCodeImage;
         }
 
         internal Entrada()
@@ -32,9 +33,9 @@ namespace AlbaranApi.Models
         public DateTime CreationDate { get; set; }
         public string ProviderId { get; set; }
         public Guid ProductIdentity { get; set; }
-        public byte[] QrCodeImage { get; set; }
 
-        [Column(TypeName = "decimal(18,4)")]
-        public decimal ProductAmount { get; set; }
+        // public byte[] QrCodeImage { get; set; }
+
+        [Column(TypeName = "decimal(18,4)")] public decimal ProductAmount { get; set; }
     }
 }
