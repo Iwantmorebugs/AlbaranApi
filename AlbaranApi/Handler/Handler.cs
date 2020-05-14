@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Threading.Tasks;
-using AlbaranApi.Contracts;
+﻿using AlbaranApi.Contracts;
 using AlbaranApi.Dto;
 using AlbaranApi.Models;
 using Inventario.EventResult.CommandResultDto;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Threading.Tasks;
+using Inventario.EventResult.CommandResultAlbaranDto;
 
 namespace AlbaranApi.Handler
 {
@@ -25,9 +27,9 @@ namespace AlbaranApi.Handler
 
         public async Task<Entrada> HandleRegister(EntradaDto entradaDto)
         {
-            var entrada = MapEntradaDtoToEntrada(entradaDto);
             Trace();
-
+            var entrada = MapEntradaDtoToEntrada(entradaDto);
+            
             var result = _entradaRepository.CreateEntry(entrada);
             var resultToBePublished = CreatePublishableResult(result);
 
@@ -41,9 +43,9 @@ namespace AlbaranApi.Handler
             return _entradaRepository.GetAllEntradas();
         }
 
-        private AddAmountProductResultDto CreatePublishableResult(Entrada result)
+        private AddAmountProductAlbaranResultDto CreatePublishableResult(Entrada result)
         {
-            var resultToBePublished = new AddAmountProductResultDto
+            var resultToBePublished = new AddAmountProductAlbaranResultDto
             {
                 ExistenciaProductoId = result.ProductIdentity,
                 ProductName = result.ProductName,
@@ -62,13 +64,15 @@ namespace AlbaranApi.Handler
                 new
                 {
                     Time = DateTime.Now,
-                    Message = "Receiving Entry command"
+                    Message = "Entering Handler"
                 };
             Console.WriteLine(trace);
         }
 
         private Entrada MapEntradaDtoToEntrada(EntradaDto entradaDto)
         {
+
+            Console.WriteLine("Entering Mapper");
             var qrCodeData = ImageProcess(entradaDto);
 
             // var image = ImageToByteArray(qrImage);
@@ -92,15 +96,17 @@ namespace AlbaranApi.Handler
 
         private string ImageProcess(EntradaDto entradaDto)
         {
+            Console.WriteLine("Entering ImageProcess");
+
             var qrCodeData = entradaDto.EntradaId + "," + entradaDto.CreationDate + "," + entradaDto.ProviderId + "," +
                              entradaDto.ProductIdentity;
-
-            var qrCode = _qrService.CreateQrCode(qrCodeData);
-            var qrImage = _qrService.CreateQrImage(qrCode);
-
             //try
             //{
-            //    qrImage.Save("QrTest" + ".jpeg", ImageFormat.Jpeg);
+            //    Console.WriteLine("Entering CreateQrCode");
+            //    var qrCode = _qrService.CreateQrCode(qrCodeData);
+            //    Console.WriteLine("Entering CreateQrImage");
+            //    var qrImage = _qrService.CreateQrImage(qrCode);
+            //    // qrImage.Save("QrTest" + ".jpeg", ImageFormat.Jpeg);
             //    qrImage.Dispose();
             //}
             //catch (Exception e)
@@ -110,6 +116,7 @@ namespace AlbaranApi.Handler
             //}
 
             return qrCodeData;
+
         }
 
         public static string FirstCharToUpper(string s)

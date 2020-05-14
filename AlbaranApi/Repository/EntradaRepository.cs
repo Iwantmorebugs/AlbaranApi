@@ -17,6 +17,7 @@ namespace AlbaranApi.Repository
 
         public Entrada CreateEntry(Entrada entrada)
         {
+            Console.WriteLine("Entering Repository ");
             if (_context.Entradas.Any())
                 if (_context.Entradas.Any(x => x.EntradaId == entrada.EntradaId))
                     throw new Exception("Entrada \"" + entrada.EntradaId + "\" is already taken");

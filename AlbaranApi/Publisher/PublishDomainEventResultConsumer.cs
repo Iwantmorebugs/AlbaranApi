@@ -15,7 +15,7 @@ namespace AlbaranApi.Publisher
             _messageBus = messageBus ?? throw new ArgumentNullException(nameof(messageBus));
         }
 
-        public async Task Consume(ICommandResultDto eventResult)
+        public async Task Consume(ICommandResultAlbaranDto eventResult)
         {
             try
             {

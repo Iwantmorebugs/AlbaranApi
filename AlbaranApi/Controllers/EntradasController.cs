@@ -29,6 +29,7 @@ namespace AlbaranApi.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
+                Console.WriteLine("Entering Controller");
                 var entradaResult = await _handler.HandleRegister(entradaDto);
 
                 return Ok(entradaResult);

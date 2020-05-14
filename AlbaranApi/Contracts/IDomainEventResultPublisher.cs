@@ -5,6 +5,6 @@ namespace AlbaranApi.Contracts
 {
     public interface IDomainEventResultPublisher
     {
-        Task Consume(ICommandResultDto eventResult);
+        Task Consume(ICommandResultAlbaranDto eventResult);
     }
 }
