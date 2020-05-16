@@ -1,13 +1,15 @@
 ﻿using AlbaranApi.Contracts;
 using AlbaranApi.Dto;
 using AlbaranApi.Models;
-using Inventario.EventResult.CommandResultDto;
+using Inventario.EventResult.CommandResultAlbaranDto;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
-using Inventario.EventResult.CommandResultAlbaranDto;
+using Inventario.EventResult.Model;
+using Container = Inventario.EventResult.Model.Container;
 
 namespace AlbaranApi.Handler
 {
@@ -27,15 +29,43 @@ namespace AlbaranApi.Handler
 
         public async Task<Entrada> HandleRegister(EntradaDto entradaDto)
         {
-            Trace();
-            var entrada = MapEntradaDtoToEntrada(entradaDto);
-            
+            HandleRegisterTrace();
+
+            var entrada = HandleDatosAlbaran(entradaDto);
+
+            HandleProductQrData(entrada);
+
             var result = _entradaRepository.CreateEntry(entrada);
+
             var resultToBePublished = CreatePublishableResult(result);
 
             if (result != null) await _domainEventResultPublisher.Consume(resultToBePublished);
 
             return result;
+        }
+
+        private static void HandleProductQrData(Entrada entrada)
+        {
+            foreach (var producto in entrada.EntradaProductos)
+            {
+                var productTrace = WeekOfYearIso8601(DateTime.Now) + "/" + entrada.ProviderId + "/" +
+                                   producto.ProductIdentity + "/" + producto.ProductName;
+
+                producto.Trace = productTrace;
+
+                var productQrData = producto.ProductIdentity + "/" + producto.ProductName + producto.ProductAmount +
+                                    "/" + entrada.ProviderId;
+
+                producto.ProductQrData = productQrData;
+            }
+        }
+
+        private Entrada HandleDatosAlbaran(EntradaDto entradaDto)
+        {
+            var entrada = MapEntradaDtoToEntrada(entradaDto);
+            var qrCodeData = GetAlbaranQrData(entradaDto);
+            entrada.AlbaranQrCodeData = qrCodeData;
+            return entrada;
         }
 
         public IEnumerable<Entrada> HandleGetAll()
@@ -45,20 +75,29 @@ namespace AlbaranApi.Handler
 
         private AddAmountProductAlbaranResultDto CreatePublishableResult(Entrada result)
         {
+            List<ProductoInventario> listaProductosInventariosResult =
+                (from prod in result.EntradaProductos
+                    let listaContainersInventariosResult =
+                        prod.Container.Select(container => new Container()
+                        {
+                            Amount = container.Amount, ContainerType = container.ContainerType,
+                            ProductIdentity = container.ProductIdentity
+                        }).ToList()
+                    select new ProductoInventario()
+                    {
+                        ProductIdentity = prod.ProductIdentity, ProductAmount = prod.ProductAmount,
+                        Containers = listaContainersInventariosResult
+                    }).ToList();
+
             var resultToBePublished = new AddAmountProductAlbaranResultDto
             {
-                ExistenciaProductoId = result.ProductIdentity,
-                ProductName = result.ProductName,
-                TotalResult = result.ProductAmount,
-                price = result.ProductPrice,
-                Picture = result.Picture,
-                Category = result.Category,
-                Brand = result.Brand
+                EntradaProductos = listaProductosInventariosResult
             };
+
             return resultToBePublished;
         }
 
-        private static void Trace()
+        private static void HandleRegisterTrace()
         {
             var trace =
                 new
@@ -71,35 +110,42 @@ namespace AlbaranApi.Handler
 
         private Entrada MapEntradaDtoToEntrada(EntradaDto entradaDto)
         {
-
             Console.WriteLine("Entering Mapper");
-            var qrCodeData = ImageProcess(entradaDto);
-
             // var image = ImageToByteArray(qrImage);
-
             var entrada = new Entrada
             {
-                QrCodeData = qrCodeData,
+                AlbaranQrCodeData = "",
                 EntradaId = entradaDto.EntradaId,
                 ProviderId = entradaDto.ProviderId,
-                ProductIdentity = entradaDto.ProductIdentity,
-                ProductAmount = entradaDto.ProductAmount,
                 CreationDate = entradaDto.CreationDate,
-                ProductName = entradaDto.ProductName,
-                ProductPrice = entradaDto.ProductPrice,
-                Brand = entradaDto.Brand,
-                Picture = entradaDto.Picture,
-                Category = entradaDto.Category
+                Observation = entradaDto.Observation,
+                EntradaProductos = entradaDto.EntradaProductosDto.Select(prod => MapEntradaProductoDtoToProducto(prod)).ToList()
             };
+
             return entrada;
         }
 
-        private string ImageProcess(EntradaDto entradaDto)
+        private EntradaProducto MapEntradaProductoDtoToProducto(EntradaProductoDto entradaDto)
         {
-            Console.WriteLine("Entering ImageProcess");
+            var entradaProducto = new EntradaProducto()
+            {
+                Container = entradaDto.Container,
+                ProductIdentity = entradaDto.ProductIdentity,
+                ProductName = entradaDto.ProductName,
+                ProductAmount = entradaDto.ProductAmount,
+                ProductPrice = entradaDto.ProductPrice,
+                ProductQrData = "",
+                Trace = "",
+            };
 
-            var qrCodeData = entradaDto.EntradaId + "," + entradaDto.CreationDate + "," + entradaDto.ProviderId + "," +
-                             entradaDto.ProductIdentity;
+            return entradaProducto;
+        }
+
+        private string GetAlbaranQrData(EntradaDto entradaDto)
+        {
+            Console.WriteLine("Entering GetAlbaranQrData");
+
+            var qrCodeData = entradaDto.EntradaId + "," + entradaDto.CreationDate + "," + entradaDto.ProviderId;
             //try
             //{
             //    Console.WriteLine("Entering CreateQrCode");
@@ -119,18 +165,24 @@ namespace AlbaranApi.Handler
 
         }
 
-        public static string FirstCharToUpper(string s)
+        private static string FirstCharToUpper(string s)
         {
             if (string.IsNullOrEmpty(s)) return string.Empty;
 
             return char.ToUpper(s[0]) + s.Substring(1);
         }
 
-        public static byte[] ImageToByteArray(Image imageIn)
+        private static byte[] ImageToByteArray(Image imageIn)
         {
             var imgCon = new ImageConverter();
 
             return (byte[]) imgCon.ConvertTo(imageIn, typeof(byte[]));
+        }
+
+        private static int WeekOfYearIso8601(DateTime date)
+        {
+            var day = (int)CultureInfo.CurrentCulture.Calendar.GetDayOfWeek(date);
+            return CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(date.AddDays(4 - (day == 0 ? 7 : day)), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
         }
     }
 }
