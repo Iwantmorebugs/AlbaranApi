@@ -12,6 +12,7 @@ namespace AlbaranApi.Models
             ProductIdentity = productIdentity;
         }
 
+        public Container() { }
         public string ContainerType { get; set; }
         public int Amount { get; set; }
 
