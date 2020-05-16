@@ -1,55 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using AlbaranApi.Contracts;
 using AlbaranApi.Models;
+using MongoDB.Driver;
 
 namespace AlbaranApi.Repository
 {
     public class EntradaRepository : IEntradaRepository
+
     {
-        private readonly IEntradaContext _context;
+        private readonly IMongoCollection<Entrada> _entradaRepository;
 
-        public EntradaRepository(IEntradaContext context)
+
+        public EntradaRepository(IMongoDatabaseFactory mongoDatabase)
         {
-            _context = context;
+            if (mongoDatabase is null) throw new ArgumentNullException(nameof(mongoDatabase));
+
+            var database = mongoDatabase.Create();
+            _entradaRepository = database.GetCollection<Entrada>("Albaranes");
         }
 
-        public Entrada CreateEntry(Entrada entrada)
+        public async Task CreateEntry(Entrada entry)
         {
-            Console.WriteLine("Entering Repository ");
-            if (_context.Entradas.Any())
-                if (_context.Entradas.Any(x => x.EntradaId == entrada.EntradaId))
-                    throw new Exception("Entrada \"" + entrada.EntradaId + "\" is already taken");
-
-
-            _context.Entradas.Add(entrada);
-            _context.SaveChanges();
-            return entrada;
+            await _entradaRepository.InsertOneAsync(entry);
         }
 
-        public Entrada FindEntradaById(string entradaId)
+        public async Task<Entrada>  FindEntradaById(string entradaId)
         {
-            return _context.Entradas.FirstOrDefault(x => x.EntradaId.Equals(entradaId));
+            var queryResult = await _entradaRepository.FindAsync(x => x.EntradaId.Equals(entradaId));
+
+            var existenciasHistory = await queryResult.SingleOrDefaultAsync();
+
+            return existenciasHistory;
         }
 
-        public void Update(Entrada entrada)
+        public async Task Update(Entrada entrada)
         {
-            try
-            {
-                _context.Entradas.Update(entrada);
-                _context.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            var update =
+                Builders<Entrada>
+                    .Update
+                    .Set(x => x.EntradaProductos, entrada.EntradaProductos)
+                    .Set(x => x.ProviderId, entrada.ProviderId);
+
+            Expression<Func<Entrada, bool>> expression = x => x.EntradaId == entrada.EntradaId;
+            await
+                _entradaRepository
+                    .UpdateOneAsync(expression, update);
         }
 
-        public IEnumerable<Entrada> GetAllEntradas()
+        public Task<IEnumerable<Entrada>> GetAllEntradas()
         {
-            return _context.Entradas.Select(x => x);
+            throw new NotImplementedException();
         }
     }
 }

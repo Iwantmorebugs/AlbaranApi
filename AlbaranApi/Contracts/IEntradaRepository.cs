@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using AlbaranApi.Models;
 
 namespace AlbaranApi.Contracts
 {
     public interface IEntradaRepository
     {
-        Entrada CreateEntry(Entrada entry);
-        Entrada FindEntradaById(string entradaId);
-        void Update(Entrada user);
-        IEnumerable<Entrada> GetAllEntradas();
+        Task CreateEntry(Entrada entry);
+        Task<Entrada>  FindEntradaById(string entradaId);
+        Task Update(Entrada user);
+        Task<IEnumerable<Entrada>> GetAllEntradas();
     }
 }

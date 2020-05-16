@@ -30,18 +30,13 @@ namespace AlbaranApi.Handler
         public async Task<Entrada> HandleRegister(EntradaDto entradaDto)
         {
             HandleRegisterTrace();
-
             var entrada = HandleDatosAlbaran(entradaDto);
-
             HandleProductQrData(entrada);
+            await _entradaRepository.CreateEntry(entrada);
+            var resultToBePublished = CreatePublishableResult(entrada);
+            if (entrada != null) await _domainEventResultPublisher.Consume(resultToBePublished);
 
-            var result = _entradaRepository.CreateEntry(entrada);
-
-            var resultToBePublished = CreatePublishableResult(result);
-
-            if (result != null) await _domainEventResultPublisher.Consume(resultToBePublished);
-
-            return result;
+            return entrada;
         }
 
         private static void HandleProductQrData(Entrada entrada)
@@ -68,9 +63,10 @@ namespace AlbaranApi.Handler
             return entrada;
         }
 
-        public IEnumerable<Entrada> HandleGetAll()
+        public  async  Task<IEnumerable<Entrada>>   HandleGetAll()
         {
-            return _entradaRepository.GetAllEntradas();
+            var result =  await _entradaRepository.GetAllEntradas();
+            return result;
         }
 
         private AddAmountProductAlbaranResultDto CreatePublishableResult(Entrada result)

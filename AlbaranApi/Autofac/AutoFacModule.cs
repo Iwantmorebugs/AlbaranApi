@@ -48,6 +48,19 @@ namespace AlbaranApi.Autofac
             builder.RegisterType<EntradaRepository>()
                 .As<IEntradaRepository>()
                 .SingleInstance();
+
+
+            builder
+                .Register(context =>
+                {
+                    var configuration = context.Resolve<IConfiguration>();
+                    var connectionString = configuration.GetSection("MongoDb").Value;
+                    var mongoDatabaseFactory = new MongoDatabaseFactory(connectionString);
+
+                    return mongoDatabaseFactory;
+                })
+                .As<IMongoDatabaseFactory>()
+                .SingleInstance();
         }
     }
 }

@@ -1,5 +1,3 @@
-using AlbaranApi.Contracts;
-using AlbaranApi.Models.Context;
 using Autofac;
 using MassTransit;
 using MassTransit.Util;
@@ -35,14 +33,7 @@ namespace AlbaranApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("SqlConnection");
-
             services.AddControllers();
-
-            services.AddScoped<IEntradaContext, EntradaContext>();
-
-
-            services.AddDbContext<EntradaContext>(o => o.UseSqlServer(connectionString));
 
             services.AddSwaggerGen(swagger =>
             {

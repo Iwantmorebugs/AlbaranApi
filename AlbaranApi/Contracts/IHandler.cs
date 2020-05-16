@@ -8,6 +8,6 @@ namespace AlbaranApi.Contracts
     public interface IHandler
     {
         Task<Entrada> HandleRegister(EntradaDto entradaDto);
-        IEnumerable<Entrada> HandleGetAll();
+        Task< IEnumerable<Entrada>> HandleGetAll();
     }
 }
