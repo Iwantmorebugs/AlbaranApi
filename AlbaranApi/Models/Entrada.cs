@@ -7,7 +7,7 @@ namespace AlbaranApi.Models
     public class Entrada
     {
         internal Entrada(
-                string entradaId,
+                Guid entradaId,
                 DateTime creationDate,
                 string providerId,
                 string albaranQrCodeData,
@@ -30,7 +30,7 @@ namespace AlbaranApi.Models
         }
         public string AlbaranQrCodeData { get; set; }
         [Key]
-        public string EntradaId { get; set; }
+        public Guid EntradaId { get; set; }
         public DateTime CreationDate { get; set; }
         public string ProviderId { get; set; }
         public string Observation { get; set; }
