@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Autofac" Version="5.2.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
-    <PackageReference Include="Inventario.EventResult" Version="1.0.10" />
+    <PackageReference Include="Inventario.EventResult" Version="1.0.11" />
     <PackageReference Include="Inventario.MessageBus" Version="1.0.4" />
     <PackageReference Include="MassTransit" Version="6.3.1" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="6.3.1" />

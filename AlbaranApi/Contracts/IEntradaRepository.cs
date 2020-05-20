@@ -7,7 +7,7 @@ namespace AlbaranApi.Contracts
     public interface IEntradaRepository
     {
         Task CreateEntry(Entrada entry);
-        Task<Entrada>  FindEntradaById(string entradaId);
+        Task<Entrada> FindEntradaById(string entradaId);
         Task Update(Entrada user);
         Task<IEnumerable<Entrada>> GetAllEntradas();
     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AlbaranApi.Contracts;
@@ -28,9 +27,9 @@ namespace AlbaranApi.Repository
             await _entradaRepository.InsertOneAsync(entry);
         }
 
-        public async Task<Entrada>  FindEntradaById(string entradaId)
+        public async Task<Entrada> FindEntradaById(string entradaId)
         {
-            var queryResult = await _entradaRepository.FindAsync(x => x.EntradaId.Equals(entradaId));
+            var queryResult = await _entradaRepository.FindAsync(x => x.Id.Equals(new Guid(entradaId) ));
 
             var existenciasHistory = await queryResult.SingleOrDefaultAsync();
 
@@ -45,15 +44,26 @@ namespace AlbaranApi.Repository
                     .Set(x => x.EntradaProductos, entrada.EntradaProductos)
                     .Set(x => x.ProviderId, entrada.ProviderId);
 
-            Expression<Func<Entrada, bool>> expression = x => x.EntradaId == entrada.EntradaId;
+            Expression<Func<Entrada, bool>> expression = x => x.Id == entrada.Id;
             await
                 _entradaRepository
                     .UpdateOneAsync(expression, update);
         }
 
-        public Task<IEnumerable<Entrada>> GetAllEntradas()
+        public async Task<IEnumerable<Entrada>> GetAllEntradas()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var queryResult = await _entradaRepository.FindAsync(x => x.Id != null);
+                var entradas = await queryResult.ToListAsync();
+
+                return entradas;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }

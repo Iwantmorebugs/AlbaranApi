@@ -1,10 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using AlbaranApi.Contracts;
+﻿using AlbaranApi.Contracts;
 using AlbaranApi.Dto;
 using AlbaranApi.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AlbaranApi.Models;
 
 namespace AlbaranApi.Controllers
 {
@@ -13,12 +14,10 @@ namespace AlbaranApi.Controllers
     public class EntradasController : ControllerBase
     {
         private readonly IHandler _handler;
-        private readonly ILogger<EntradasController> _logger;
 
         public EntradasController(
-            ILogger<EntradasController> logger, IHandler handler)
+            IHandler handler)
         {
-            _logger = logger;
             _handler = handler;
         }
 
@@ -48,9 +47,9 @@ namespace AlbaranApi.Controllers
         [Route("")]
         //[Route("{sortBy}/{sortOrder}")]
         [HttpGet]
-        public IActionResult GetAllOrderedBy(string sortBy, string sortOrder)
+        public async Task<IActionResult> GetAllOrderedBy(string sortBy, string sortOrder)
         {
-            var providerResult = _handler.HandleGetAll();
+            var providerResult = await _handler.HandleGetAll();
             //sortBy = FirstCharToUpper(sortBy);
             //var orderBy = typeof(Entrada).GetProperty(sortBy);
 

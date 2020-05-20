@@ -1,6 +1,6 @@
-﻿using AlbaranApi.Contracts;
+﻿using System;
+using AlbaranApi.Contracts;
 using MongoDB.Driver;
-using System;
 
 namespace AlbaranApi.Repository
 {

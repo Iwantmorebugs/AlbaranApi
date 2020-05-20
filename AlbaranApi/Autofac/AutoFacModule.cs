@@ -39,8 +39,8 @@ namespace AlbaranApi.Autofac
             builder.RegisterType<PublishDomainEventResultConsumer>()
                 .As<IDomainEventResultPublisher>()
                 .SingleInstance();
-            builder.RegisterType<QrServices>()
-                .As<IQrService>()
+            builder.RegisterType<AlbaranQrServices>()
+                .As<IAlbaranQrService>()
                 .SingleInstance();
             builder.RegisterType<Handler.Handler>()
                 .As<IHandler>()
